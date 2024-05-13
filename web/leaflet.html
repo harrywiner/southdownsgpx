@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map with Image Markers</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+         #map { height: 750px; }
+    </style>
+</head>
+<body>
+    <iframe width='100%' height='400px' src="https://api.mapbox.com/styles/v1/br19097/clw3gnch2025f01o0a95u8m7i.html?title=false&access_token=pk.eyJ1IjoiYnIxOTA5NyIsImEiOiJjbGJwZzM5OGEwOGIwM3FyN3o4YzJvZzlkIn0.sVEu8o7zd-0tHixeHBSQUQ&zoomwheel=false#11.31/50.9792/-0.9615" title="Outdoors" style="border:none;"></iframe>
+    <div id="map"></div>
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([50.97200477178504, -0.944057760708064], 11);
+
+        // Add a tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18
+        }).addTo(map);
+
+        // Add a marker with an image in the popup
+        var marker = L.marker([50.9978318828897, -1.1406610794684595]).addTo(map);
+        marker.bindPopup('<b>Hello world!</b><br><img src="static/beacon_hill.jpg" width="150px" />').openPopup();
+
+        // Function to process CSV data
+        function processCSVData(data) {
+                data.forEach(function(row) {
+                    var lat = parseFloat(row.latitude);
+                    var lng = parseFloat(row.longitude);
+                    var speed = row.speed;
+
+                    // Add a marker with a popup showing the speed
+                    var marker = L.marker([lat, lng]).addTo(map);
+                    marker.bindPopup('<b>Speed:</b> ' + speed + ' km/h');
+                });
+            }
+
+        // Load and parse the CSV file
+        Papa.parse('static/south_downs_way.csv', {
+            download: true,
+            header: true,
+            complete: function(results) {
+                processCSVData(results.data);
+            }
+        });
+    </script>
+</body>
+</html>
